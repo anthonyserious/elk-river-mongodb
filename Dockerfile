@@ -22,6 +22,10 @@ RUN cd /local \
   && rm -f elasticsearch-1.4.0.tar.gz \
   && ln -s /logs /local/elasticsearch-1.4.0/logs 
 
+# River MongoDB plugin
+RUN cd /local/elasticsearch-1.4.0 \
+  && ./bin/plugin --install com.github.richardwilly98.elasticsearch/elasticsearch-river-mongodb/2.0.4
+
 # Kibana
 RUN cd /local \
   && curl -O 'https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-BETA2.tar.gz' \ 
