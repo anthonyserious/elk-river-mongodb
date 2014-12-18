@@ -16,7 +16,25 @@ $MONGO_HOME/bin/mongod --config $MONGO_HOME/mongod.conf --fork
 
 # This would be....kludgy.  Initiate replica set in case it hasn't already been.
 sleep 2
-echo 'rs.initiate()' | /local/mongodb-linux-x86_64-2.6.5/bin/mongo
+ip=$( grep `hostname` /etc/hosts|cut -f1 )
+tmpConfig=`mktemp`
+cat > $tmpConfig <<EOF
+config = {
+   "_id" : "rs0",
+   "version" : 1,
+   "members" : [
+      {
+         "_id" : 1,
+         "host" : "$ip:27017"
+      }
+   ]
+}
+rs.reconfig(config, {force:true})
+rs.initiate()
+EOF
+
+$MONGO_HOME/bin/mongo < $tmpConfig
+rm -f $tmpConfig
 
 # start up elasticsearch
 [ ! -d /data/elasticsearch ] && mkdir /data/elasticsearch
